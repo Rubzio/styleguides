@@ -2,11 +2,16 @@
 
 > [**English**](CleanABAP.md)
 
+> Do so that it is good
+>
+> -- <cite>Marek Milczanowski</cite>
+
 This guide is an adoption of:
 
-- [Robert C. Martin's _Clean Code_]
+
 - [Clean ABAP Guide](https://github.com/SAP/styleguides/blob/main/clean-abap/CleanABAP.md)
 - [SAP ABAP Programming Guidelines](https://help.sap.com/doc/abapdocu_753_index_htm/7.53/en-US/abenabap_pgl.htm)
+- [Robert C. Martin's _Clean Code_]
 
 for needs of Schaeffler Group in terms of ABAP development.
 
@@ -33,7 +38,7 @@ The [Cheat Sheet](cheat-sheet/CheatSheet.md) is a print-optimized version.
   - [Avoid noise words such as "data", "info", "object"](#avoid-noise-words-such-as-data-info-object)
   - [Pick one word per concept](#pick-one-word-per-concept)
   - [Use pattern names only if you mean them](#use-pattern-names-only-if-you-mean-them)
-  - [Avoid encodings, esp. Hungarian notation and prefixes](#avoid-encodings-esp-hungarian-notation-and-prefixes)
+  - (Delete!!!) [Avoid encodings, esp. Hungarian notation and prefixes](#avoid-encodings-esp-hungarian-notation-and-prefixes)
   - [Avoid obscuring built-in functions](#avoid-obscuring-built-in-functions)
 - [Language](#language)
   - [Mind the legacy](#mind-the-legacy)
@@ -262,25 +267,20 @@ that are experienced in what they do but new to Clean Code;
 these topics are perfectly "healthy", but people may have problems
 making themselves comfortable with them in the beginning.
 
-Continue to these more controversial topics later;
-especially [Comments](#comments), [Names](#names), and [Formatting](#formatting)
-can lead to near-religious disputes
-and should only be addressed by teams that already saw proof of Clean Code's positive effects.
+Continue to some of these more controversial topics;
+especially [Comments](#comments), [Names](#names), and [Formatting](#formatting).
 
 ### How to Refactor Legacy Code
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [How to](#how-to) > [This section](#how-to-refactor-legacy-code)
 
 The topics [Booleans](#booleans), [Conditions](#conditions), [Ifs](#ifs),
-and [Methods](#methods) are most rewarding if you are working on a legacy project
+and [Methods](#methods) are most rewarding if you are working on a legacy solution
 with tons of code that you cannot or do not want to change
 because they can be applied to new code without conflicts.
 
 The topic [Names](#names) is very demanding for legacy projects,
-as it may introduce a breach between old and new code,
-up to a degree where sections like
-[Avoid encodings, esp. Hungarian notation and prefixes](#avoid-encodings-esp-hungarian-notation-and-prefixes)
-are better ignored.
+as it may introduce a breach between old and new code.
 
 Try not to mix different development styles within the same
 development object when carrying out a refactoring. If the
@@ -295,43 +295,33 @@ where mixing styles could cause confusion, for example:
 - Mixing `RETURNING` and `EXPORTING` in the method signatures of
 methods only returning / exporting one parameter.
 
-We observed good results with a four-step plan for refactoring:
-
-1. Get the team aboard. Communicate and explain the new style,
-and get everybody on the project team to agree to it.
-You don't need to commit all guidelines at once, just start
-with an undisputed small subset and evolve from there.
-
-2. Follow the _boy scout rule_ to your daily work routine:
-_always leave the code you edit a little cleaner than you found it_.
-Don't obsess with this by sinking hours into "cleaning the campsite",
-just spend a couple of minutes extra and observe how the
-improvements accumulate over time.
-
-3. Build _clean islands_: from time to time, pick a small object or component and
-try to make it clean in all aspects. These islands demonstrate the benefit
-of what you're doing and form solidly tested home bases for further refactoring.
-
-4. Talk about it. No matter whether you set up old-school [Fagan code reviews](https://en.wikipedia.org/wiki/Fagan_inspection),
-hold info sessions, or form discussion boards in your favorite chat tool:
-you will need to talk about your experiences and learnings, to enable the
-team to grow a common understanding.
-
 ### How to Check Automatically
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [How to](#how-to) > [This section](#how-to-check-automatically)
 
-[code pal for ABAP](https://github.com/SAP/code-pal-for-abap)
-provides a comprehensive suite of automatic checks for Clean ABAP.
-
-ABAP Test Cockpit, Code Inspector, Extended Check, and Checkman provide
+ABAP Test Cockpit (ATC), Code Inspector and Extended Check provide
 some checks that may help you find certain issues.
 
-[abapOpenChecks](https://github.com/larshp/abapOpenChecks),
+ABAP Test Cockpit is the main static check tool used. It helps to spot easy to miss issues like unused methods, parameters and variables. It's purpose is not just the measurament of code quality but rather as a development tool. 
+
+On top of standard available checks we use add-ons like:
+- Schaeffler custom checks
+- [code pal for ABAP](https://github.com/SAP/code-pal-for-abap/blob/master/docs/check_documentation.md)
+provides a comprehensive suite of automatic checks for Clean ABAP.
+- [abapOpenChecks](https://docs.abapopenchecks.org/checks/),
 an Open Source collection of Code Inspector checks,
 also covers some of the described anti-patterns.
 
-[abaplint](https://github.com/abaplint/abaplint) is an open source reimplementation of the ABAP parser. It works without a SAP system and is meant to be used on code serialized using abapGit. It offers multiple integrations (GitHub Actions, Jenkins, text editors...), covers some of the antipatterns and can also be used to check formatting and code conventions.
+Some of the additional checks include:
+- Naming convention - don't worry about naming convention - ATC will check prefixes for you
+- Formatting - empty lines inside statements, single dots, etc. 
+- Obsolete language elements usage
+
+If an add-on finding is not understandable you can read more by clicking a link to documentation.
+
+Generally, developer should solve all _relevant_ ATC findings. By solving we mean repairing the code or hiding findings with pragma (prefferably) or pseudo-comment. The latter is an information for other code readers that ATC finding is a false positive or that code author handled the situation differently than the static check expected.
+
+But! Some of the checks like [high comment usage](https://github.com/SAP/code-pal-for-abap/blob/master/docs/checks/comment-usage.md) or [line length](https://docs.abapopenchecks.org/checks/04/) cannot be hidden using a pragma. This is because they serve as indicators and don't have to be fixed if not relevant. Example: a method contains only few executable statments and big comment section explaining what it does. 
 
 ### How to Relate to Other Guides
 
@@ -343,33 +333,7 @@ e.g. [Throw CX_STATIC_CHECK for manageable exceptions](#throw-cx_static_check-fo
 
 Some facts are from the
 [ABAP Programming Guidelines](https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-US/index.htm?file=abenabap_pgl.htm),
-which this guide is mostly compatible to; deviations are indicated and always in the spirit of cleaner code.
-
-This guide also respects the
-[DSAG's Recommendations for ABAP Development](https://www.dsag.de/sites/default/files/2020-12/dsag_recommendation_abap_development.pdf),
-although we are more precise in most details.
-
-Since its publication, Clean ABAP has become a reference guide
-for many of SAP's in-house development teams,
-including the several hundred coders that work on S/4HANA.
-
-### How to Disagree
-
-> [Clean ABAP](#clean-abap) > [Content](#content) > [How to](#how-to) > [This section](#how-to-disagree)
-
-We wrote this style guide for readers who are already acquainted with Clean Code or who are right now working on that,
-with a strong focus on how to apply Clean Code _specifically to ABAP_.
-
-Please mind that we therefore did not introduce all concepts in the same length and depth
-as the original book and related resources: these are still worth a read,
-especially if you disagree with things in here just because we didn't explain them very well.
-Use the links in the sections to read up on the background of our guidance.
-
-You are free to discuss and disagree with anything we say here.
-One of the pillars of Clean Code is that _the team rules_.
-Just be sure to give things a fair chance before you discard them.
-
-[CONTRIBUTING.md](../CONTRIBUTING.md) suggests ways how you can change this guide or deviate from it in minor details.
+which this guide is mostly compatible] to; deviations are indicated and always in the spirit of cleaner code.
 
 ## Names
 
@@ -565,29 +529,6 @@ The most common patterns include:
 [strategy](https://en.wikipedia.org/wiki/Strategy_pattern).
 
 > Read more in _Chapter 2: Meaningful Names: Avoid Disinformation_ of [Robert C. Martin's _Clean Code_]
-
-### Avoid encodings, esp. Hungarian notation and prefixes
-
-> [Clean ABAP](#clean-abap) > [Content](#content) > [Names](#names) > [This section](#avoid-encodings-esp-hungarian-notation-and-prefixes)
-
-We encourage you to get rid of _all_ encoding prefixes.
-
-```ABAP
-METHOD add_two_numbers.
-  result = a + b.
-ENDMETHOD.
-```
-
-instead of the needlessly longer
-
-```ABAP
-METHOD add_two_numbers.
-  rv_result = iv_a + iv_b.
-ENDMETHOD.
-```
-
-> [Avoid Encodings](sub-sections/AvoidEncodings.md)
-> describes the reasoning in depth.
 
 ### Avoid obscuring built-in functions
 
