@@ -1,22 +1,14 @@
-# Clean ABAP
+# ABAP Good Practices and Clean Code Guide  
 
 > [**English**](CleanABAP.md)
-> &nbsp;·&nbsp;
-> [中文](CleanABAP_zh.md)
-> &nbsp;·&nbsp;
-> [Français](CleanABAP_fr.md)
-> &nbsp;·&nbsp;
-> [Deutsch](CleanABAP_de.md)
-> &nbsp;·&nbsp;
-> [日本語](CleanABAP_ja.md)
-> &nbsp;·&nbsp;
-> [Español](CleanABAP_es.md)
-> &nbsp;·&nbsp;
-> [한국어](CleanABAP_kr.md)
 
-This guide is an adoption of
-[Robert C. Martin's _Clean Code_]
-for [ABAP](https://en.wikipedia.org/wiki/ABAP).
+This guide is an adoption of:
+
+- [Robert C. Martin's _Clean Code_]
+- [Clean ABAP Guide](https://github.com/SAP/styleguides/blob/main/clean-abap/CleanABAP.md)
+- [SAP ABAP Programming Guidelines](https://help.sap.com/doc/abapdocu_753_index_htm/7.53/en-US/abenabap_pgl.htm)
+
+for needs of Schaeffler Group in terms of ABAP development.
 
 The [Cheat Sheet](cheat-sheet/CheatSheet.md) is a print-optimized version.
 
