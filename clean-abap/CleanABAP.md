@@ -339,6 +339,8 @@ which this guide is mostly compatible] to; deviations are indicated and always i
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [This section](#names)
 
+Proper naming can greatly increase code readability making it easier to spot logical problems as well as reducing future effort required to modify and use it. 
+
 ### Use descriptive names
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [Names](#names) > [This section](#use-descriptive-names)
