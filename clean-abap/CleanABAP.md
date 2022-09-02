@@ -2,7 +2,7 @@
 
 > [**English**](CleanABAP.md)
 
-> Do so that it is good
+> Rule #1: do so that it is good
 >
 > -- <cite>Marek Milczanowski</cite>
 
@@ -242,6 +242,10 @@ The [Cheat Sheet](cheat-sheet/CheatSheet.md) is a print-optimized version.
     - [Forward unexpected exceptions instead of catching and failing](#forward-unexpected-exceptions-instead-of-catching-and-failing)
     - [Write custom asserts to shorten code and avoid duplication](#write-custom-asserts-to-shorten-code-and-avoid-duplication)
 
+## What quality code is and why bother? 
+
+tbd.
+
 ## How to
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [This section](#how-to)
@@ -269,6 +273,21 @@ making themselves comfortable with them in the beginning.
 
 Continue to some of these more controversial topics;
 especially [Comments](#comments), [Names](#names), and [Formatting](#formatting).
+
+### How to Improve Your Code Quality Fast
+
+> [Clean ABAP](#clean-abap) > [Content](#content) > [How to](#how-to) > [This section](#how-to-improve-your-code-quality-fast)
+
+We believe that improving code readability is the easiest and fastest way to upgrade your developments. It can be the first step that will help you see other areas.  
+
+Here are a few things that can quickly make your code more readable.
+- Use long and descriptive names.
+- Avoid comments that just repeat what code says or bring nothing to a reader. You don't have to comment everything. Let the code speak for itself. If there is too many comments people tend to them instead of the code. 
+- Don't use obsolete syntax. Not only obsolete sytax is harder to handle in many cases, it also adds complexity without any benefit.
+
+Additionally:
+- Improve error handling. Using error flags, error codes and obsolete exceptions may seem harmlessly. Unfortunatelly it limits the way a method can be used and restricts flexibility of client classes or methods. 
+- Divide and conquer. Split methods and classes into smaller ones. Classes should have one resposibility (one reason to change) and method should do one thing only (on one level of abstraction). This makes your code more flexible and more robust to change at the same time. It is a basis for concepts like breaking dependencies, error handling and reusability. 
 
 ### How to Refactor Legacy Code
 
@@ -305,7 +324,7 @@ some checks that may help you find certain issues.
 ABAP Test Cockpit is the main static check tool used. It helps to spot easy to miss issues like unused methods, parameters and variables. It's purpose is not just the measurament of code quality but rather as a development tool. 
 
 On top of standard available checks we use add-ons like:
-- Schaeffler custom checks
+- Schaeffler custom checks.
 - [code pal for ABAP](https://github.com/SAP/code-pal-for-abap/blob/master/docs/check_documentation.md)
 provides a comprehensive suite of automatic checks for Clean ABAP.
 - [abapOpenChecks](https://docs.abapopenchecks.org/checks/),
@@ -313,13 +332,13 @@ an Open Source collection of Code Inspector checks,
 also covers some of the described anti-patterns.
 
 Some of the additional checks include:
-- Naming convention - don't worry about naming convention - ATC will check prefixes for you
+- Naming convention - don't worry about naming convention - ATC will check prefixes for you.
 - Formatting - empty lines inside statements, single dots, etc. 
-- Obsolete language elements usage
+- Obsolete language elements usage.
 
 If an add-on finding is not understandable you can read more by clicking a link to documentation.
 
-Generally, developer should solve all _relevant_ ATC findings. By solving we mean repairing the code or hiding findings with pragma (prefferably) or pseudo-comment. The latter is an information for other code readers that ATC finding is a false positive or that code author handled the situation differently than the static check expected.
+Generally, developer should solve all _relevant_ ATC findings. By solving we mean repairing the code or hiding findings with pragma or pseudo-comment. The latter is an information for other code readers that ATC finding is a false positive or that code author handled the situation differently than the static check expected.
 
 But! Some of the checks like [high comment usage](https://github.com/SAP/code-pal-for-abap/blob/master/docs/checks/comment-usage.md) or [line length](https://docs.abapopenchecks.org/checks/04/) cannot be hidden using a pragma. This is because they serve as indicators and don't have to be fixed if not relevant. Example: a method contains only few executable statments and big comment section explaining what it does. 
 
@@ -333,7 +352,7 @@ e.g. [Throw CX_STATIC_CHECK for manageable exceptions](#throw-cx_static_check-fo
 
 Some facts are from the
 [ABAP Programming Guidelines](https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-US/index.htm?file=abenabap_pgl.htm),
-which this guide is mostly compatible] to; deviations are indicated and always in the spirit of cleaner code.
+which this guide is mostly compatible to; deviations are indicated and always in the spirit of cleaner code. Others are widely accepted good practices.
 
 ## Names
 
@@ -460,16 +479,40 @@ METHODS add_message
 METHODS read_entries
 ```
 
-Starting Boolean methods with verbs like `is_` and `has_` yields nice reading flow:
-
-```ABAP
-IF is_empty( table ).
-```
-
 We recommend naming functions like methods:
 
 ```ABAP
 FUNCTION /clean/read_alerts
+```
+
+### Start Boolean methods with question verb
+
+> [Clean ABAP](#clean-abap) > [Content](#content) > [Names](#names) > [This section](#start-boolean-methods-with-question-verb)
+
+Starting Boolean methods (the ones that return only true or false) with verbs like `is_` and `has_` yields nice reading flow. It instantly informs a reader on what it returns.
+
+```ABAP
+" try to use
+METHODS is_material_deliverable
+METHODS are_entries_duplicated
+METHODS has_flight_been_delayed
+```
+```ABAP
+" instead of
+METHODS check_deliverable
+METHODS entries_duplicated
+METHODS check_flight_delayed
+```
+
+It's so easy to follow:
+```ABAP
+IF is_a_customer( lv_business_partner_id ).
+  ...
+ENDIF.
+
+IF has_errors( mo_log ).
+  RAISE EXCEPTION TYPE...
+ENDIF.
 ```
 
 ### Avoid noise words such as "data", "info", "object"
@@ -553,20 +596,15 @@ CLASS-METHODS strlen RETURNING VALUE(result) TYPE i.
 > Read More in [Built-In Functions - Obscuring with Methods](https://help.sap.com/doc/abapdocu_752_index_htm/7.52/en-us/abenbuilt_in_functions_syntax.htm#@@ITOC@@ABENBUILT_IN_FUNCTIONS_SYNTAX_3?file=abenbuilt_in_functions_syntax.htm).
 
 
-## Language
+### Change names if no longer relevant
+
+> [Clean ABAP](#clean-abap) > [Content](#content) > [Names](#names) > [This section](#change-names-if-no-longer-relevant)
+
+When initial name is no longer accurate, don't be afraid to change it. Use Eclipse _`rename`_ functionality to change the name and all occurences.    
+
+## Language 
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [This section](#language)
-
-### Mind the legacy
-
-> [Clean ABAP](#clean-abap) > [Content](#content) > [Language](#language) > [This section](#mind-the-legacy)
-
-If you code for older ABAP releases, take the advice in this guide with care:
-Many recommendations below make use of relatively new syntax and constructs
-that may not be supported in older ABAP releases.
-Validate the guidelines you want to follow on the oldest release you must support.
-Do not simply discard Clean Code as a whole -
-the vast majority of rules (e.g. naming, commenting) will work in _any_ ABAP version.
 
 ### Mind the performance
 
@@ -703,6 +741,7 @@ that lists obsolete language elements, for example
 [NW 7.51](https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-US/index.htm?file=abenabap_obsolete.htm),
 [NW 7.52](https://help.sap.com/doc/abapdocu_752_index_htm/7.52/en-US/index.htm?file=abenabap_obsolete.htm),
 [NW 7.53](https://help.sap.com/doc/abapdocu_753_index_htm/7.53/en-US/index.htm?file=abenabap_obsolete.htm).
+**[NW 7.56](https://help.sap.com/doc/abapdocu_756_index_htm/7.56/en-US/index.htm)**
 
 ### Use design patterns wisely
 
@@ -736,6 +775,9 @@ IF abap_type = 'D'.
 ### Prefer enumeration classes to constants interfaces
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [Constants](#constants) > [This section](#prefer-enumeration-classes-to-constants-interfaces)
+
+This is one of the best ways to organize constants.
+The enumeration classes methodology is completely **optional**, but it is required to organize constants in some way like in [Interfaces](#if-you-dont-use-enumeration-classes-group-your-constants).
 
 ```ABAP
 CLASS /clean/message_severity DEFINITION PUBLIC ABSTRACT FINAL.
@@ -826,6 +868,19 @@ ENDDO.
 
 > Read more in _Chapter 17: Smells and Heuristics: G27: Structure over Convention_ of [Robert C. Martin's _Clean Code_].
 
+### Avoid putting all global constants into one class or interface
+
+> [Clean ABAP](#clean-abap) > [Content](#content) > [Constants](#constants) > [This section](#avoid-putting-all-global-constants-into-one-class-or-interface)
+
+Over time, classes and interfaces with constants tend to grow too large. 
+They can be so big that developers need to know upfront what is in them in order to find something. They can be used by many not related transports, causing unnecessary trouble. If your constatant aggregators grow to large - suggest a split. 
+
+### Use local constants with caution
+
+> [Clean ABAP](#clean-abap) > [Content](#content) > [Constants](#constants) > [This section](#use-local-constants-with-caution)
+
+If there is no need for a constant to be globally accesible, it is perfectly fine to have it in the class. Decide if it should be a local or a class-constant (public or private) just like you decide on variables and attributes. Change the level of visibility if needed. 
+
 ## Variables
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [This section](#variables)
@@ -834,9 +889,14 @@ ENDDO.
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [Variables](#variables) > [This section](#prefer-inline-to-up-front-declarations)
 
-If you follow these guidelines, your methods will become so short (3-5 statements)
-that declaring variables inline at first occurrence will look more natural
+Treat this paragraph as **optional** and more like an encouragement than a rule. There are two schools of variables declaration. _At the top_ an _inline_. Both ways are fine and are doing their job.
 
+Taking full advantage of _new_ ABAP syntax requires using at least some [inline declarations](https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-us/abendeclaration_inline_guidl.htm). For that reason, many developers decide to declare everything during the first usage intead of upfront. 
+
+Whatever your style is please try to not mix two methodologies as it makes your code hard to follow. 
+
+If you follow these guidelines, your methods will become so short (3-5 statements)
+that declaring variables inline at first occurrence will look more natural. 
 ```ABAP
 METHOD do_something.
   DATA(name) = 'something'.
@@ -861,113 +921,6 @@ ENDMETHOD.
 
 > Read more in _Chapter 5: Formatting: Vertical Distance: Variable Declarations_ of [Robert C. Martin's _Clean Code_].
 
-### Don't declare inline in optional branches
-
-> [Clean ABAP](#clean-abap) > [Content](#content) > [Variables](#variables) > [This section](#dont-declare-inline-in-optional-branches)
-
-```ABAP
-" anti-pattern
-IF has_entries = abap_true.
-  DATA(value) = 1.
-ELSE.
-  value = 2.
-ENDIF.
-```
-
-This works fine because ABAP handles inline declarations as if they were at the beginning of the method.
-However, it is extremely confusing for readers,
-especially if the method is longer and you don't spot the declaration right away.
-In this case, break with inlining and put the declaration up-front:
-
-```ABAP
-DATA value TYPE i.
-IF has_entries = abap_true.
-  value = 1.
-ELSE.
-  value = 2.
-ENDIF.
-```
-
-> Read more in _Chapter 5: Formatting: Vertical Distance: Variable Declarations_ of [Robert C. Martin's _Clean Code_].
-
-### Do not chain up-front declarations
-
-> [Clean ABAP](#clean-abap) > [Content](#content) > [Variables](#variables) > [This section](#do-not-chain-up-front-declarations)
-
-```ABAP
-DATA name TYPE seoclsname.
-DATA reader TYPE REF TO reader.
-```
-
-Chaining suggests the defined variables are related on a logical level.
-To consistently use it, you would have to ensure that all chained variables belong together,
-and introduce additional chain groups to add variables.
-While this is possible, it is usually not worth the effort.
-
-Chaining also needlessly complicates reformatting and refactoring
-because each line looks different and changing them requires meddling with
-colons, dots, and commas, that are not worth the effort.
-
-```ABAP
-" anti-pattern
-DATA:
-  name   TYPE seoclsname,
-  reader TYPE REF TO reader.
-```
-
-> Also refer to [Don't align type clauses](#dont-align-type-clauses)  
-> If chaining of data declaration is used, then use one chain for each group of variables belonging together.
-
-### Prefer REF TO to FIELD-SYMBOL
-
-> [Clean ABAP](#clean-abap) > [Content](#content) > [Variables](#variables) > [This section](#prefer-ref-to-to-field-symbol)
-
-> This section [is being challenged](https://github.com/SAP/styleguides/issues/115).
-> `FIELD-SYMBOL`s seem to be considerably faster
-> when iterating internal tables,
-> such that the recommendation to use `REF TO`
-> for these cases may worsen performance.
-
-```ABAP
-LOOP AT components REFERENCE INTO DATA(component).
-```
-
-instead of the equivalent
-
-```ABAP
-" anti-pattern
-LOOP AT components ASSIGNING FIELD-SYMBOL(<component>).
-```
-
-except where you need field symbols
-
-```ABAP
-ASSIGN generic->* TO FIELD-SYMBOL(<generic>).
-ASSIGN COMPONENT name OF STRUCTURE structure TO FIELD-SYMBOL(<component>).
-ASSIGN (class_name)=>(static_member) TO FIELD-SYMBOL(<member>).
-```
-
-Code reviews demonstrate that people tend to choose between the two arbitrarily,
-"just because", "because we are always LOOPing that way", or "for no special reason".
-Arbitrary choices make the reader waste time on the pointless question why one is used over the other
-and thus should be replaced with well-founded, precise decisions.
-Our recommendation is based on this reasoning:
-
-- Field symbols can do some things that references cannot, such as dynamically accessing the components of a structure.
-Likewise, references can do things that field symbols can't, such as constructing a dynamically typed data structure.
-In summary, settling for one alone is not possible.
-
-- In object-oriented ABAP, references are all over the place and cannot be avoided,
-as any object is a `REF TO <class-name>`.
-In contrast, field symbols are only strictly required in few, special cases concerned with dynamic typing.
-References thus form a natural preference in any object-oriented program.
-
-- Field symbols are shorter than references, but the resulting memory saving is so tiny that it can be safely neglected.
-Similarly, speed is not an issue. As a consequence, there is no performance-related reason to prefer one to the other.
-
-> Read more in the article
-> [_Accessing Data Objects Dynamically_ in the ABAP Programming Guidelines](https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-US/index.htm?file=abendyn_access_data_obj_guidl.htm).
-
 ## Tables
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [This section](#tables)
@@ -975,6 +928,8 @@ Similarly, speed is not an issue. As a consequence, there is no performance-rela
 ### Use the right table type
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [Tables](#tables) > [This section](#use-the-right-table-type)
+
+Choosing the right table type can have significant impact on performance. 
 
 - You typically use `HASHED` tables for **large tables**
 that are **filled in a single step**, **never modified**, and **read often by their key**.
@@ -990,7 +945,7 @@ Adding, changing, or removing content requires finding the right insertion spot,
 but doesn't require adjusting the rest of the table's index.
 Sorted tables demonstrate their value only for large numbers of read accesses.
 
-- Use `STANDARD` tables for **small tables**, where indexing produces more overhead than benefit, and **"arrays"**, where you either don't care at all for the order of the rows, or you want to process them in exactly the order they were appended. Also, if different access to the table is needed e.g. indexed access and sorted access via `SORT` and `BINARY SEARCH`.
+- Use `STANDARD` tables for **small tables**, where indexing produces more overhead than benefit, and **"arrays"**, where you either don't care at all for the order of the rows, or you want to process them in exactly the order they were appended. Also, if different access to the table is needed e.g. indexed access and sorted access via `SORT` and `BINARY SEARCH` or better via [table expression](https://help.sap.com/doc/abapdocu_750_index_htm/7.50/en-US/abentable_expressions.htm) using `KEY`.
 
 > These are only rough guidelines.
 > Find more details in the article [_Selection of Table Category_ in the ABAP Language Help](https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-US/abenitab_kind.htm).
@@ -1139,6 +1094,25 @@ IF NOT line_exists( my_table[ key = input ] ).
 ENDIF.
 DATA(row) = my_table[ key = input ].
 ```
+Or:
+```ABAP
+" anti-pattern
+IF line_exists( my_table[ key = input ] ).
+  DATA(row) = my_table[ key = input ].
+ENDIF.
+```
+
+Addition `OPTIONAL` to a table read can also be misused: 
+```ABAP
+DATA(variable) = VALUE #( my_table[ key = input ]-field OPTIONAL).
+IF variable IS NOT INITIAL. 
+  result = my_table[ key = input ]-field.
+ENDIF. 
+```
+Do the same as:
+```ABAP
+result = VALUE #( my_table[ key = input ]-field OPTIONAL).
+```
 
 > Besides being a performance improvement,
 > this is a special variant of the more general
@@ -1148,9 +1122,9 @@ DATA(row) = my_table[ key = input ].
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [This section](#strings)
 
-### Use ` to define literals
+### Use \` or string templates `| |` to define literals
 
-> [Clean ABAP](#clean-abap) > [Content](#content) > [Strings](#strings) > [This section](#use--to-define-literals)
+> [Clean ABAP](#clean-abap) > [Content](#content) > [Strings](#strings) > [This section](#use--or-string-templates---to-define-literals)
 
 ```ABAP
 CONSTANTS some_constant TYPE string VALUE `ABC`.
@@ -1166,10 +1140,9 @@ DATA some_string TYPE string.
 some_string = 'ABC'.
 ```
 
-`|` is generally okay, but cannot be used for `CONSTANTS` and adds needless overhead when specifying a fixed value:
+`| |` can be used as well. Note that it cannot be used for `CONSTANTS`.
 
 ```ABAP
-" anti-pattern
 DATA(some_string) = |ABC|.
 ```
 
@@ -1212,9 +1185,9 @@ archiving_status = /clean/archivation_status=>archiving_in_process.
 ```
 
 Generally, Booleans are a bad choice
-to distinguish types of things
+to distinguish _types of things_
 because you will nearly always encounter cases
-that are not exclusively one or the other
+that are not exclusively one or the other.
 
 ```ABAP
 assert_true( xsdbool( document->is_archived( ) = abap_true AND
@@ -1223,9 +1196,6 @@ assert_true( xsdbool( document->is_archived( ) = abap_true AND
 
 [Split method instead of Boolean input parameter](#split-method-instead-of-boolean-input-parameter)
 moreover explains why you should always challenge Boolean parameters.
-
-> Read more in
-> [1](http://www.beyondcode.org/articles/booleanVariables.html)
 
 ### Use ABAP_BOOL for Booleans
 
@@ -1301,7 +1271,7 @@ ENDIF.
 `xsdbool` is the best method for our purpose, as it directly produces a `char1`,
 which fits our boolean type `abap_bool` best.
 The equivalent functions `boolc` and `boolx` produce different types
-and add an unnecessary implicit type conversion.
+and add an unnecessary implicit type conversion, but are also acceptable.
 
 We agree that the name `xsdbool` is unlucky and misleading;
 after all, we're not at all interested in the "XML Schema Definition" parts that the "xsd" prefix suggests.
@@ -1387,9 +1357,10 @@ IF [ NOT ] condition_is_fulfilled( ).
 is not just very compact, but it also allows to keep the code closer to natural language as the comparison expression:
 
 ```ABAP
-" anti-pattern
 IF condition_is_fulfilled( ) = abap_true / abap_false.
 ```
+
+Nevertheless, conditions should be writen with readibility in mind.
 
 Mind that the predicative method call `... meth( ) ...` is just a short form of `... meth( ) IS NOT INITIAL ...`, see [Predicative Method Call](https://help.sap.com/doc/abapdocu_752_index_htm/7.52/en-US/abenpredicative_method_calls.htm) in the ABAP Keyword Documentation. This is why the short form should only be used for methods returning types where the non-initial value has the meaning of "true" and the initial value has the meaning of "false".
 
@@ -1428,7 +1399,7 @@ IF ( example_a IS NOT INITIAL OR
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [Conditions](#conditions) > [This section](#consider-extracting-complex-conditions)
 
-It's nearly always a good idea to extract complex conditions to methods of their own:
+It's nearly always a good idea to extract _complex_ conditions to methods of their own:
 
 ```ABAP
 IF is_provided( example ).
