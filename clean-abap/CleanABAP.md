@@ -1528,6 +1528,8 @@ Regular expressions also usually consume more memory and processing time
 because they need to be parsed into an expression tree and compiled at runtime into an executable matcher.
 Simple solutions may do with a straight-forward loop and a temporary variable.
 
+Don't be afraid to use regexes for more complicated cases or if you think it's better in your case. 
+
 ### Prefer basis checks to regular expressions
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [Regular expressions](#regular-expressions) > [This section](#prefer-basis-checks-to-regular-expressions)
@@ -1715,6 +1717,8 @@ sort-aggregate algorithm from the rest of your class's code,
 - to enable mocking certain aspects of the global class,
 for example by extracing all database access to a separate local class
 that can the be replaced with a test double in the unit tests.
+
+- for Reports as a replacment of putting code in an Include or a Report directly 
 
 Local classes hinder reuse because they cannot be used elsewhere.
 Although they are easy to extract, people will usually fail to even find them,
@@ -2171,6 +2175,8 @@ CLASS-METHODS create_instance
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [Methods](#methods) > [Methods: Object orientation](#methods-object-orientation) > [This section](#public-instance-methods-should-be-part-of-an-interface)
 
+This advice is **optional**. Follow it when you write unit tests or when you find it useful. 
+
 Public instance methods should always be part of an interface.
 This decouples dependencies and simplifies mocking them in unit tests.
 
@@ -2531,46 +2537,33 @@ METHODS set_is_deleted
 > [2](https://silkandspinach.net/2004/07/15/avoid-boolean-parameters/)
 > [3](http://jlebar.com/2011/12/16/Boolean_parameters_to_API_functions_considered_harmful..html)
 
-### Parameter Names
-
-> [Clean ABAP](#clean-abap) > [Content](#content) > [Methods](#methods) > [This section](#parameter-names)
-
-#### Consider calling the RETURNING parameter RESULT
-
-> [Clean ABAP](#clean-abap) > [Content](#content) > [Methods](#methods) > [Parameter Names](#parameter-names) > [This section](#consider-calling-the-returning-parameter-result)
-
-Good method names are usually so good that the `RETURNING` parameter does not need a name of its own.
-The name would do little more than parrot the method name or repeat something obvious.
-
-Repeating a member name can even produce conflicts that need to be resolved by adding a superfluous `me->`.
-
-```ABAP
-" anti-pattern
-METHODS get_name
-  RETURNING
-    VALUE(name) TYPE string.
-
-METHOD get_name.
-  name = me->name.
-ENDMETHOD.
-```
-
-In these cases, simply call the parameter `RESULT`, or something like `RV_RESULT` if you prefer Hungarian notation.
-
-Name the `RETURNING` parameter if it is _not_ obvious what it stands for,
-for example in methods that return `me` for method chaining,
-or in methods that create something but don't return the created entity but only its key or so.
-
 ### Parameter Initialization
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [Methods](#methods) > [This section](#parameter-initialization)
 
-#### Clear or overwrite EXPORTING reference parameters
+#### Overwrite EXPORTING reference parameters
 
-> [Clean ABAP](#clean-abap) > [Content](#content) > [Methods](#methods) > [Parameter Initialization](#parameter-initialization) > [This section](#clear-or-overwrite-exporting-reference-parameters)
+> [Clean ABAP](#clean-abap) > [Content](#content) > [Methods](#methods) > [Parameter Initialization](#parameter-initialization) > [This section](#overwrite-exporting-reference-parameters)
 
 Reference parameters refer to existing memory areas that may be filled beforehand.
-Clear or overwrite them to provide reliable data:
+Make sure it doesn't affect your results by:
+- overwriting the parameter:
+```ABAP
+" overwrite
+METHOD square.
+  result = cl_abap_math=>square( 2 ).
+ENDMETHOD.
+```
+
+- passing the parameter by value:
+```ABAP
+METHODS square
+  EXPORTING
+    VALUE(result) TYPE i.
+ENDMETHOD.
+```
+
+- or if above options are not possible, clearing them:
 
 ```ABAP
 METHODS square
@@ -2581,11 +2574,6 @@ METHODS square
 METHOD square.
   CLEAR result.
   " ...
-ENDMETHOD.
-
-" overwrite
-METHOD square.
-  result = cl_abap_math=>square( 2 ).
 ENDMETHOD.
 ```
 
@@ -2964,7 +2952,7 @@ MESSAGE e001(ad) INTO DATA(message).
 In case variable `message` is not needed, add the pragma `##NEEDED`:
 
 ```ABAP
-MESSAGE e001(ad) INTO DATA(message) ##NEEDED.
+MESSAGE e001(ad) INTO DATA(lv_dummy) ##NEEDED.
 ```
 
 Avoid the following:
@@ -2977,6 +2965,7 @@ IF 1 = 2. MESSAGE e001(ad). ENDIF.
 This is an anti-pattern since:
 - It contains unreachable code.
 - It tests a condition which can never be true for equality.
+- It bears a risk that nobody will change message number inside it, making where-used results inaccurate.  
 
 ### Return Codes
 
@@ -3014,8 +3003,12 @@ The exception-handling `CATCH` can be at the very end of his method, or complete
 - Exceptions can provide details on the error in their attributes and through methods.
 Return codes require you to devise a different solution on your own, such as also returning a log.
 
+- You can include error texts to exceptions.
+
 - The environment reminds the caller with syntax errors to handle exceptions.
 Return codes can be accidentally ignored without anybody noticing.
+
+- The caller can handle exceptions in more flexible way. For instance fixing and reprocessing the call 
 
 #### Don't let failures slip through
 
@@ -3102,6 +3095,8 @@ get_component_types(
     OTHERS              = 2 ).
 ```
 
+> Read more in [ABAP documentation](https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-us/abenclass_exception_guidl.htm)
+
 ### Throwing
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [Error Handling](#error-handling) > [This section](#throwing)
@@ -3124,6 +3119,8 @@ Enables you to add common functionality to all exceptions, such as special text 
 #### Throw one type of exception
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [Error Handling](#error-handling) > [Throwing](#throwing) > [This section](#throw-one-type-of-exception)
+
+**Optional**
 
 ```ABAP
 METHODS generate
@@ -3294,8 +3291,18 @@ RAISE SHORTDUMP TYPE cx_sy_create_object_error.  " >= NW 7.53
 MESSAGE x666(general).                           " < NW 7.53
 ```
 
-This behavior will prevent any kind of consumer from doing anything useful afterwards.
+This behavior will prevent any kind of consumer from doing anything useful afterwards. 
 Use this only if you are sure about that.
+Dumping will usually lead to creation of an IT support ticket. Please make it as easy as possible to identify cause and possible solution.
+
+
+Avoid dumping with constructs like `ASSERT` with impossible condition:
+```ABAP
+"anti-pattern
+WHEN OTHERS.
+  ASSERT 1 = 2.
+ENDCASE.
+```
 
 #### Prefer RAISE EXCEPTION NEW to RAISE EXCEPTION TYPE
 
@@ -3521,29 +3528,6 @@ METHOD do_it.
 ENDMETHOD.
 ```
 
-### Put comments before the statement they relate to
-
-> [Clean ABAP](#clean-abap) > [Content](#content) > [Comments](#comments) > [This section](#put-comments-before-the-statement-they-relate-to)
-
-```ABAP
-" delegate pattern
-output = calculate_result( input ).
-```
-
-Clearer than
-
-```ABAP
-" anti-pattern
-output = calculate_result( input ).
-" delegate pattern
-```
-
-And less invasive than
-
-```ABAP
-output = calculate_result( input ).  " delegate pattern
-```
-
 ### Delete code instead of commenting it
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [Comments](#comments) > [This section](#delete-code-instead-of-commenting-it)
@@ -3554,7 +3538,7 @@ output = calculate_result( input ).  " delegate pattern
 ```
 
 When you find something like this, delete it.
-The code is obviously not needed because your application works and all tests are green.
+The code is obviously not needed because your application works.
 Deleted code can be reproduced from the version history later on.
 If you need to preserve a piece of code permanently, copy it to a file or a `$TMP` or `HOME` object.
 
@@ -3649,7 +3633,7 @@ ENDMETHOD.
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [Comments](#comments) > [This section](#abap-doc-only-for-public-apis)
 
-Write ABAP Doc to document public APIs,
+(**Optionally**) Write ABAP Doc only to document public APIs,
 meaning APIs that are intended for developers
 in other teams or applications.
 Don't write ABAP Doc for internal stuff.
@@ -3693,10 +3677,10 @@ when name lengths etc. change; if you want to avoid this, consider dropping rule
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [This section](#be-consistent)
 
-Format all code of a project in the same way.
+Format all code of a team/sub-project in the same way.
 Let all team members use the same formatting style.
 
-If you edit foreign code, adhere to that project's formatting style
+If you edit foreign code, adhere to that team's formatting style
 instead of insisting on your personal style.
 
 If you change your formatting rules over time,
@@ -3983,6 +3967,8 @@ However, this is the best pattern if you want to avoid the formatting to be brok
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [Formatting](#formatting) > [This section](#line-break-multiple-parameters)
 
+**Optional**
+
 ```ABAP
 DATA(sum) = add_two_numbers( value_1 = 5
                              value_2 = 6 ).
@@ -3995,6 +3981,8 @@ However, otherwise, it's hard to spot where one parameter ends and the next star
 " anti-pattern
 DATA(sum) = add_two_numbers( value_1 = 5 value_2 = 6 ).
 ```
+
+If you have just 2 or 3 parameters and choose not to line them, separate them with few 
 
 ### Align parameters
 
@@ -4073,6 +4061,8 @@ DATA(result) = merge_structures( a = VALUE #( field_1 = 'X'
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [Formatting](#formatting) > [This section](#dont-align-type-clauses)
 
+**Optional**
+
 ```ABAP
 DATA name TYPE seoclsname.
 DATA reader TYPE REF TO /clean/reader.
@@ -4109,6 +4099,10 @@ Furthermore, the anti-pattern looks ambiguous because `=` is used for comparison
 ## Testing
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [This section](#testing)
+
+At present it is _not_ required to use Unit Tests in S4us project. This whole chapter should be treated as **optional**.
+It is hovewer a highly encouraged practice to write testable code and include at least some Unit Tests. 
+Individual teams and developers already benefit from test automation.
 
 ### Principles
 
