@@ -32,7 +32,6 @@ The [Cheat Sheet](cheat-sheet/CheatSheet.md) is a print-optimized version.
   - [Avoid noise words such as "data", "info", "object"](#avoid-noise-words-such-as-data-info-object)
   - [Pick one word per concept](#pick-one-word-per-concept)
   - [Use pattern names only if you mean them](#use-pattern-names-only-if-you-mean-them)
-  - (Delete!!!) [Avoid encodings, esp. Hungarian notation and prefixes](#avoid-encodings-esp-hungarian-notation-and-prefixes)
   - [Avoid obscuring built-in functions](#avoid-obscuring-built-in-functions)
 - [Language](#language)
   - [Mind the legacy](#mind-the-legacy)
