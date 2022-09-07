@@ -2,13 +2,7 @@
 
 > [**English**](CleanABAP.md)
 
-> Rule #1: do so that it is good
->
-> -- <cite>Marek Milczanowski</cite>
-
 This guide is an adoption of:
-
-
 - [Clean ABAP Guide](https://github.com/SAP/styleguides/blob/main/clean-abap/CleanABAP.md)
 - [SAP ABAP Programming Guidelines](https://help.sap.com/doc/abapdocu_753_index_htm/7.53/en-US/abenabap_pgl.htm)
 - [Robert C. Martin's _Clean Code_]
