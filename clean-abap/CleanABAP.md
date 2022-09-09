@@ -273,13 +273,13 @@ especially [Comments](#comments), [Names](#names), and [Formatting](#formatting)
 
 We believe that improving code readability is the easiest and fastest way to upgrade your developments. It can be the first step that will help you see other areas.  
 
-Here are a few things that can quickly make your code more readable.
+Here are a few things that can quickly make your code more readable:
 - Use long and descriptive names.
-- Avoid comments that just repeat what code says or bring nothing to a reader. You don't have to comment everything. Let the code speak for itself. If there is too many comments people tend to them instead of the code. 
+- Avoid comments that just repeat what code says or bring nothing to a reader. You don't have to comment everything. Let the code speak for itself. If there is too many comments people tend to read them instead of the code. 
 - Don't use obsolete syntax. Not only obsolete sytax is harder to handle in many cases, it also adds complexity without any benefit.
 
 Additionally:
-- Improve error handling. Using error flags, error codes and obsolete exceptions may seem harmlessly. Unfortunatelly it limits the way a method can be used and restricts flexibility of client classes or methods. 
+- Improve error handling. Using error flags, error codes and obsolete exceptions may seem harmless. Unfortunatelly it limits the way a method can be used and restricts flexibility of client classes. 
 - Divide and conquer. Split methods and classes into smaller ones. Classes should have one resposibility (one reason to change) and method should do one thing only (on one level of abstraction). This makes your code more flexible and more robust to change at the same time. It is a basis for concepts like breaking dependencies, error handling and reusability. 
 
 ### How to Refactor Legacy Code
