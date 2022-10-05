@@ -1,7 +1,5 @@
 # ABAP Good Practices and Clean Code Guide  
 
-> [**English**](CleanABAP.md)
-
 This guide is an adoption of:
 - [Clean ABAP Guide](https://github.com/SAP/styleguides/blob/main/clean-abap/CleanABAP.md)
 - [SAP ABAP Programming Guidelines](https://help.sap.com/doc/abapdocu_753_index_htm/7.53/en-US/abenabap_pgl.htm)
@@ -11,16 +9,19 @@ for needs of Schaeffler Group in terms of ABAP development.
 
 The [Cheat Sheet](cheat-sheet/CheatSheet.md) is a print-optimized version.
 
+---
+*Adopted by Ruben Ziółkowski (ziolkrbe@schaeffler.com).*
+
 [Robert C. Martin's _Clean Code_]: https://www.oreilly.com/library/view/clean-code/9780136083238/
 
 ## Content
 
 - [How to](#how-to)
   - [How to Get Started with Clean Code](#how-to-get-started-with-clean-code)
+  - [How to Improve Your Code Quality Fast](#how-to-improve-your-code-quality-fast)
   - [How to Refactor Legacy Code](#how-to-refactor-legacy-code)
   - [How to Check Automatically](#how-to-check-automatically)
   - [How to Relate to Other Guides](#how-to-relate-to-other-guides)
-  - [How to Disagree](#how-to-disagree)
 - [Names](#names)
   - [Use descriptive names](#use-descriptive-names)
   - [Prefer solution domain and problem domain terms](#prefer-solution-domain-and-problem-domain-terms)
@@ -160,7 +161,6 @@ The [Cheat Sheet](cheat-sheet/CheatSheet.md) is a print-optimized version.
   - [Write comments to explain the why, not the what](#write-comments-to-explain-the-why-not-the-what)
   - [Design goes into the design documents, not the code](#design-goes-into-the-design-documents-not-the-code)
   - [Comment with ", not with *](#comment-with--not-with-)
-  - [Put comments before the statement they relate to](#put-comments-before-the-statement-they-relate-to)
   - [Delete code instead of commenting it](#delete-code-instead-of-commenting-it)
   - [Use FIXME, TODO, and XXX and add your ID](#use-fixme-todo-and-xxx-and-add-your-id)
   - [Don't add method signature and end-of comments](#dont-add-method-signature-and-end-of-comments)
@@ -171,7 +171,7 @@ The [Cheat Sheet](cheat-sheet/CheatSheet.md) is a print-optimized version.
   - [Be consistent](#be-consistent)
   - [Optimize for reading, not for writing](#optimize-for-reading-not-for-writing)
   - [Use the Pretty Printer before activating](#use-the-pretty-printer-before-activating)
-  - [Use your Pretty Printer team settings](#use-your-pretty-printer-team-settings)
+  - [Pretty Printer settings](##pretty-printer-settings)
   - [No more than one statement per line](#no-more-than-one-statement-per-line)
   - [Stick to a reasonable line length](#stick-to-a-reasonable-line-length)
   - [Condense your code](#condense-your-code)
@@ -314,12 +314,12 @@ methods only returning / exporting one parameter.
 ABAP Test Cockpit (ATC), Code Inspector and Extended Check provide
 some checks that may help you find certain issues.
 
-ABAP Test Cockpit is the main static check tool used. It helps to spot easy to miss issues like unused methods, parameters and variables. It's purpose is not just the measurament of code quality but rather as a development tool. 
+ABAP Test Cockpit is the main static check tool used. It helps to spot easy to miss issues like unused methods, parameters and variables. It's purpose is not just the measurement of code quality but rather as a development tool. 
 
 On top of standard available checks we use add-ons like:
 - Schaeffler custom checks.
 - [code pal for ABAP](https://github.com/SAP/code-pal-for-abap/blob/master/docs/check_documentation.md)
-provides a comprehensive suite of automatic checks for Clean ABAP.
+that provides a comprehensive suite of automatic checks for Clean ABAP.
 - [abapOpenChecks](https://docs.abapopenchecks.org/checks/),
 an Open Source collection of Code Inspector checks,
 also covers some of the described anti-patterns.
@@ -333,13 +333,13 @@ If an add-on finding is not understandable you can read more by clicking a link 
 
 Generally, developer should solve all _relevant_ ATC findings. By solving we mean repairing the code or hiding findings with pragma or pseudo-comment. The latter is an information for other code readers that ATC finding is a false positive or that code author handled the situation differently than the static check expected.
 
-But! Some of the checks like [high comment usage](https://github.com/SAP/code-pal-for-abap/blob/master/docs/checks/comment-usage.md) or [line length](https://docs.abapopenchecks.org/checks/04/) cannot be hidden using a pragma. This is because they serve as indicators and don't have to be fixed if not relevant. Example: a method contains only few executable statments and big comment section explaining what it does. 
+But! Some of the checks like [high comment usage](https://github.com/SAP/code-pal-for-abap/blob/master/docs/checks/comment-usage.md) or [line length](https://docs.abapopenchecks.org/checks/04/) cannot be hidden using a pragma. This is because they serve as indicators and don't have to be fixed if not relevant.
 
 ### How to Relate to Other Guides
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [How to](#how-to) > [This section](#how-to-relate-to-other-guides)
 
-Our guide follows the _spirit_ of Clean Code,
+Our guide follows the _principles_ of Clean Code,
 meaning we adjusted some things to the ABAP programming language
 e.g. [Throw CX_STATIC_CHECK for manageable exceptions](#throw-cx_static_check-for-manageable-exceptions).
 
@@ -647,7 +647,7 @@ FUNCTION check_business_partner [...].
 ENDFUNCTION.
 ```
 
-> [Function Groups vs. Classes](sub-sections/FunctionGroupsVsClasses.md)
+> [Function Groups vs. Classes](https://github.com/SAP/styleguides/blob/main/clean-abap/sub-sections/FunctionGroupsVsClasses.md)
 > describes the differences in detail.
 
 ### Prefer functional to procedural language constructs
@@ -808,7 +808,7 @@ INTERFACE /dirty/common_constants.
 ENDINTERFACE.
 ```
 
-> [Enumerations](sub-sections/Enumerations.md)
+> [Enumerations](https://github.com/SAP/styleguides/blob/main/clean-abap/sub-sections/Enumerations.md)
 > describes common enumeration patterns
 > and discusses their advantages and disadvantages.
 >
@@ -882,7 +882,7 @@ If there is no need for a constant to be globally accesible, it is perfectly fin
 
 > [Clean ABAP](#clean-abap) > [Content](#content) > [Variables](#variables) > [This section](#prefer-inline-to-up-front-declarations)
 
-Treat this paragraph as **optional** and more like an encouragement than a rule. There are two schools of variables declaration. _At the top_ an _inline_. Both ways are fine and are doing their job.
+Treat this paragraph as **optional** and more like an encouragement than a rule. There are two schools of variables declaration. _At the top_ and _inline_. Both ways are fine and are doing their job.
 
 Taking full advantage of _new_ ABAP syntax requires using at least some [inline declarations](https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-us/abendeclaration_inline_guidl.htm). For that reason, many developers decide to declare everything during the first usage intead of upfront. 
 
@@ -1620,7 +1620,7 @@ for example the [Composite design pattern](https://en.wikipedia.org/wiki/Composi
 Just ask yourself critically whether inheritance in your case will really provide more benefits than disadvantages.
 If in doubt, composition generally is the safer choice.
 
-> [Interfaces vs. abstract classes](sub-sections/InterfacesVsAbstractClasses.md)
+> [Interfaces vs. abstract classes](https://github.com/SAP/styleguides/blob/main/clean-abap/sub-sections/InterfacesVsAbstractClasses.md)
 compares some details.
 
 #### Don't mix stateful and stateless in the same class
@@ -2181,7 +2181,7 @@ In clean object orientation, having a method public without an interface does no
 with few exceptions such as enumeration classes
 which will never have an alternative implementation and will never be mocked in test cases.
 
-> [Interfaces vs. abstract classes](sub-sections/InterfacesVsAbstractClasses.md)
+> [Interfaces vs. abstract classes](https://github.com/SAP/styleguides/blob/main/clean-abap/sub-sections/InterfacesVsAbstractClasses.md)
 describes why this also applies to classes that overwrite inherited methods.
 
 ### Parameter Number
@@ -3210,7 +3210,7 @@ and will take care of reacting to the error situation.
 > This is in sync with the [ABAP Programming Guidelines](https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-US/abenexception_category_guidl.htm)
 > but contradicts [Robert C. Martin's _Clean Code_],
 > which recommends to prefer unchecked exceptions;
-> [Exceptions](sub-sections/Exceptions.md) explains why.
+> [Exceptions](https://github.com/SAP/styleguides/blob/main/clean-abap/sub-sections/Exceptions.md) explains why.
 
 #### Throw CX_NO_CHECK for usually unrecoverable situations
 
@@ -3722,21 +3722,17 @@ in a separate Transport Request or Note.
 
 > Read more in _Chapter 5: Formatting: Team Rules_ of [Robert C. Martin's _Clean Code_].
 
-### Use your Pretty Printer team settings
+### Pretty Printer settings
 
-> [Clean ABAP](#clean-abap) > [Content](#content) > [Formatting](#formatting) > [This section](#use-your-pretty-printer-team-settings)
+> [Clean ABAP](#clean-abap) > [Content](#content) > [Formatting](#formatting) > [This section](#pretty-printer-settings)
 
-Always use your team settings.
-Specify them under
+General rule for Pretty Printer settings is:
+> Use only lowercase or uppercase in an individual token. Use uppercase for keywords and lowercase for operands.
+
+Specify Pretty Printer settings under
 _Menu_ > _Utilities_ > _Settings ..._ > _ABAP Editor_ > _Pretty Printer_.
 
-Set _Indent_ and _Convert Uppercase/Lowercase_ > _Uppercase Keyword_
-as agreed in your team.
-
-> [Upper vs. Lower Case](sub-sections/UpperVsLowerCase.md) explains
-> why we do not give clear guidance for the type case of keywords.
->
-> Read more in _Chapter 5: Formatting: Team Rules_ of [Robert C. Martin's _Clean Code_].
+> Read more in the [ABAP Documentation](https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-US/index.htm?file=abenlower_upper_case_guidl.htm)
 
 ### No more than one statement per line
 
